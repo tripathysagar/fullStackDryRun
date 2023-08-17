@@ -1,7 +1,10 @@
  class ToDo{
  #toDoList
- constructor (){
-    this.#toDoList = []
+ constructor (obj){
+    if(typeof obj === "undefined")
+        this.#toDoList = []
+    else
+        this.#toDoList = obj
  }
  
  
@@ -30,33 +33,55 @@
     return true
     
  }
+
+ findIndex(id){
+    for(let i = 0; i< this.#toDoList.length ; i++){
+        if(this.#toDoList[i].id === id)
+            return i
+    }
+
+    return -1
+ }
  add (title, completed, description){
     
     const checkInput = this.checkInputType(title, completed, description)
     if(checkInput !== true)
         return checkInput
 
-    const obj = { "title": title, "completed": completed, "description": description }
+    const obj = { 
+        "id": parseInt(Math.random() * 10000000000), 
+        "title": title, 
+        "completed": completed, 
+        "description": description
+    }
     
     this.setter = obj
 
-    return {"id" :this.#toDoList.length}
+    return {"id" :obj.id}
 }
 
  remove(indexOfTodo) //remove todo from list of todos
  {
-    if(indexOfTodo > (this.#toDoList.length) || indexOfTodo <= 0) return this.error("index out of range")
+    let objIndex = this.findIndex(indexOfTodo)
+    if(objIndex === -1){
+        return this.error("ID is not available")
+    }
 
-    this.#toDoList.splice(indexOfTodo -1, 1)
+    this.#toDoList.splice(objIndex, 1)
+    
     return { "msg" :true}
  }
  
-    update(index, title= undefined, completed = undefined, description = undefined) //update todo at given index
+    update(indexOfTodo, title= undefined, completed = undefined, description = undefined) //update todo at given index
     {
-        if(index > (this.#toDoList.length) || index <= 0) return this.error("index out of range")
+        let objIndex = this.findIndex(indexOfTodo)
 
         let changed = false
-        const todo = this.get(index )
+        const todo = this.get(indexOfTodo )
+
+        if(todo.error !== undefined){
+            return todo
+        }
         //console.log(todo)
         if(title !== undefined){
             todo.title = title
@@ -78,7 +103,7 @@
         }
 
         if(changed) {
-            this.#toDoList.splice(index -1, 1, todo )
+            this.#toDoList.splice(objIndex, 1, todo )
         }
         //console.log(this.#toDoList)
         return { "msg" :true}
@@ -95,9 +120,11 @@
 
     get(indexOfTodo) //returns todo at given index
     {
-        if(indexOfTodo > (this.#toDoList.length) || indexOfTodo <= 0) return this.error("index out of range")
-        
-        return this.#toDoList.at(indexOfTodo -1)
+        let objIndex = this.findIndex(indexOfTodo)
+        if(objIndex === -1){
+            return this.error("ID is not available")
+        }
+        return this.#toDoList.at(objIndex)
     }
 
     clear()//deletes all todos

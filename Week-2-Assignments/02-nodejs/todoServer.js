@@ -41,6 +41,8 @@
  */
 const express = require('express')
 const bodyParser = require('body-parser')
+const fs = require('fs');
+
 const { ToDo }= require("./todoClass.js")
 
 const app = express()
@@ -56,6 +58,7 @@ const isError = (msg) => {
     return true
   return false
 }
+
 const handleGetAllToDo = (req, resp) => {
   let todos = todoLis.getAll()
   resp.send(todos)
@@ -96,7 +99,7 @@ const handleDeleteToDoByID = (req, resp) =>{
   const id = parseInt(req.params.id)
 
   const deleted = todoLis.remove(id) 
-  const status = isError(deleted) ? 202 : 401
+  const status = isError(deleted) ? 202 : 404
 
   resp.status(status).send(deleted)
 }
@@ -109,7 +112,7 @@ app.get("/todos/:id", handleGetToDoByID)
 app.put("/todos/:id", handlePutToDoByID)
 app.delete("/todos/:id", handleDeleteToDoByID)
 
-
+module.exports = app;
 
 app.get('/', (req, resp)=>{
   resp.send({

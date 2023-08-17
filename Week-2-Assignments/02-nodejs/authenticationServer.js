@@ -30,8 +30,95 @@
  */
 
 const express = require("express")
+const bodyParser = require("body-parser")
 const PORT = 3000;
 const app = express();
 // write your logic here, DONT WRITE app.listen(3000) when you're running tests, the tests will automatically start the server
 
+const users = []
+
+const signupHandler = (req, resp) => {
+  const user = req.body
+  console.log(user)
+  let status, msg
+  if(user["username"] === undefined || user["password"] === undefined || user["firstName"] === undefined || user["lastName"] === undefined)
+  {
+    msg = "missing mandotary parameters"
+    status = 400
+  }
+  else{
+    let userExist = false
+    for(let i = 0; i < users.length; i++){
+      if(users[i]["username"] === user["username"]){
+        msg = "user name is already taken"
+        status = 400
+        userExist = true
+        break
+      }
+    }
+    if(!userExist){
+      users.push(user)
+      msg = "user created"
+      status = 201
+    }
+  }
+
+  resp.status(status).send({"msg": msg})
+}
+
+const loginHandler = (req, resp) => {
+  const loginDetails = req.body
+  let validDetails = false
+  let status, msg
+
+  if(loginDetails["username"] === undefined || loginDetails["password"] === undefined){
+    msg = "missing mandotary parameters"
+    status = 401
+  }
+  else{
+    for(let i = 0; i < users.length; i++){
+      if(users[i]["username"] === loginDetails["username"]){
+        if(users[i]["password"] === loginDetails["password"]){
+          status = 200
+          msg = {
+            "email" : loginDetails["username"],
+          }
+        }
+        else{
+          status = 400
+          msg = {
+            "msg" : "invalid crediential"
+          }
+        }
+        }
+        else{
+          status = 400
+          msg = {
+            "msg" : "user is not present"
+          }
+        }
+      }
+  }
+  resp.status(status).send(msg)
+}
+
+const dataHandler = (req, resp) => {
+  
+}
+
+
+
+app.use(bodyParser.json())
+app.post("/signup", signupHandler)
+app.post("/login", loginHandler)
+app.post("/data", dataHandler)
+
+
+
+app.get("/", (req, resp) =>{
+  
+  //console.log(resp)
+  resp.send(users)
+} )
+app.listen(PORT, () => console.log(`server is listening to ${PORT}`))
 module.exports = app;
