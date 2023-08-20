@@ -58,23 +58,31 @@
             .then(data => {
 
 
-                window.onload = function (){
-                    const divLis = document.getElementById(data.id)
-                    console.log(data)
-
-                    if(data.description !== undefined){
-                        console.log("inside if :", data.description)
-                        divLis.appendChild[1].innerText = data.description
-                    }
-                    divLis.childNodes[0].innerText = data.title
-                    divLis.appendChild[2].innerText = data.completed ? "Done" : "not Done"
-
-                    document.getElementsByTagName("form")[0].setAttribute("name", "")
-                    console.log(divLis)
-                }
                 
+                    const divLis = document.getElementById(data.id)
+                    
 
+                    
+                    function update(){ 
+                        if(divLis.childNodes[1].innerHTML !==  data.description){
+                            console.log("inside if description :", data.description)
+                            divLis.childNodes[1].setHTML( data.description)
+                        }
+                        if(divLis.childNodes[2].innerHTML !==  data.completed){
+                            console.log("inside if completed :", data.completed)
+                            divLis.childNodes[2].setHTML( data.completed)
+                        }
+                        if(divLis.childNodes[0].innerHTML !==  data.title){
+                            console.log("inside if title :", data.title)
+                            divLis.childNodes[0].setHTML( data.title)
+                        }
+                        
+                     }
 
+                    update()
+                    
+                    document.getElementsByTagName("form")[0].setAttribute("name", "")  
+                
             }).catch((error) => {
                  console.log(error)
             });
