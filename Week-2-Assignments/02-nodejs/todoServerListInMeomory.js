@@ -39,93 +39,93 @@
 
   Testing the server - run `npm run test-todoServer` command in terminal
  */
-const express = require('express')
-const bodyParser = require('body-parser')
-const fs = require('fs');
-
-const { ToDo }= require("./todoClass.js")
-
-const app = express()
-const port = 3000
-
-
-const todoLis = new ToDo()
-console.log(todoLis)
-console.log(todoLis.getAll())
-
-const isError = (msg) => {
-  if(typeof msg.error === "undefined")
-    return true
-  return false
-}
-
-const handleGetAllToDo = (req, resp) => {
-  let todos = todoLis.getAll()
-  resp.send(todos)
-}
-
-
-const handlePostToDo = (req,resp) => {
-  //console.log(req.body)
-  const added = todoLis.add(req.body.title, req.body.completed, req.body.description) 
-  const status = isError(added) ? 202 : 401
-
-  resp.status(status).send(added)
-}
-
-const handleGetToDoByID = (req, resp) => {
-  const id = parseInt(req.params.id)
-  const exist = todoLis.get(id) 
-  //console.log("+++++++++++++++++++++++++++++++++++++++++")
-  //console.log(id, exist)
-  const status = isError(exist) ? 201 : 404
+  const express = require('express')
+  const bodyParser = require('body-parser')
   
-
-  resp.status(status).send(exist)
-
-}
-
-const handlePutToDoByID = (req, resp) => {
-  const id = parseInt(req.params.id)
-  //console.log(req.body)
   
-  const exist = todoLis.update(id, req.body.title, req.body.completed, req.body.description) 
-  const status = isError(exist) ? 200 : 404
-
-  resp.status(status).send(exist)
-}
-
-const handleDeleteToDoByID = (req, resp) =>{
-  const id = parseInt(req.params.id)
-
-  const deleted = todoLis.remove(id) 
-  const status = isError(deleted) ? 202 : 404
-
-  resp.status(status).send(deleted)
-}
-
-app.use(bodyParser.json())
-
-app.get('/todos', handleGetAllToDo)
-app.post('/todos', handlePostToDo)
-app.get("/todos/:id", handleGetToDoByID)
-app.put("/todos/:id", handlePutToDoByID)
-app.delete("/todos/:id", handleDeleteToDoByID)
-
-module.exports = app;
-
-app.get('/', (req, resp)=>{
-  resp.send({
-    "msg" : "hello there"
+  const { ToDo }= require("./todoClass.js")
+  
+  const app = express()
+  const port = 3000
+  
+  
+  const todoLis = new ToDo()
+  console.log(todoLis)
+  console.log(todoLis.getAll())
+  
+  const isError = (msg) => {
+    if(typeof msg.error === "undefined")
+      return true
+    return false
+  }
+  
+  const handleGetAllToDo = (req, resp) => {
+    let todos = todoLis.getAll()
+    resp.send(todos)
+  }
+  
+  
+  const handlePostToDo = (req,resp) => {
+    //console.log(req.body)
+    const added = todoLis.add(req.body.title, req.body.completed, req.body.description) 
+    const status = isError(added) ? 202 : 401
+  
+    resp.status(status).send(added)
+  }
+  
+  const handleGetToDoByID = (req, resp) => {
+    const id = parseInt(req.params.id)
+    const exist = todoLis.get(id) 
+    //console.log("+++++++++++++++++++++++++++++++++++++++++")
+    //console.log(id, exist)
+    const status = isError(exist) ? 201 : 404
+    
+  
+    resp.status(status).send(exist)
+  
+  }
+  
+  const handlePutToDoByID = (req, resp) => {
+    const id = parseInt(req.params.id)
+    //console.log(req.body)
+    
+    const exist = todoLis.update(id, req.body.title, req.body.completed, req.body.description) 
+    const status = isError(exist) ? 200 : 404
+  
+    resp.status(status).send(exist)
+  }
+  
+  const handleDeleteToDoByID = (req, resp) =>{
+    const id = parseInt(req.params.id)
+  
+    const deleted = todoLis.remove(id) 
+    const status = isError(deleted) ? 202 : 404
+  
+    resp.status(status).send(deleted)
+  }
+  
+  app.use(bodyParser.json())
+  
+  app.get('/todos', handleGetAllToDo)
+  app.post('/todos', handlePostToDo)
+  app.get("/todos/:id", handleGetToDoByID)
+  app.put("/todos/:id", handlePutToDoByID)
+  app.delete("/todos/:id", handleDeleteToDoByID)
+  
+  module.exports = app;
+  
+  app.get('/', (req, resp)=>{
+    resp.send({
+      "msg" : "hello there"
+    })
   })
-})
-app.listen(port, ()=>{
-  `app listening to the port ${port}`
-})
-/*
-const app = express()
-
-app.use(bodyParser.json())
-
-module.exports = app;
-*/
+  app.listen(port, ()=>{
+    `app listening to the port ${port}`
+  })
+  /*
+  const app = express()
+  
+  app.use(bodyParser.json())
+  
+  module.exports = app;
+  */

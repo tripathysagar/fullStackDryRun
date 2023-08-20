@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>To-Do app</title>
+</head>
+<script>
+    function onSubmit(){
+
+        function parsedResponse(data){
+            console.log(data)
+            addList(data)
+        }
+
+        function callBack(resp){
+            //resp.json().then(parsedResponse)
+            if(resp.status === 202){
+                console.log("note added")
+                alert("note added")
+                return resp.json().then(parsedResponse)
+            }else{
+                alert("not able to post")
+            }
+        }
+
+        const title = document.getElementById("title").value
+        const description = document.getElementById("description").value
+
+        document.getElementById("title").value = ""
+        document.getElementById("description").value = ""
+        const id = document.getElementsByTagName("form")[0].name
+
+        if(id === ""){
+            fetch('http://localhost:3000/todos', {
+                method : "POST",
+                body: JSON.stringify({
+                    title: title,
+                    completed: false,
+                    description: description
+                }),
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            }).then(callBack)
+        }
+        else{
+            fetch('http://localhost:3000/todos/'+id, {
+                method : "PUT",
+                body: JSON.stringify({
+                    title: title,
+                    completed: false,
+                    description: description
+                }),
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            })
+            .then(resp => {return (resp.json())})
+            .then(data => {
+
+
+                window.onload = function (){
+                    const divLis = document.getElementById(data.id)
+                    console.log(data)
+
+                    if(data.description !== undefined){
+                        console.log("inside if :", data.description)
+                        divLis.appendChild[1].innerText = data.description
+                    }
+                    divLis.childNodes[0].innerText = data.title
+                    divLis.appendChild[2].innerText = data.completed ? "Done" : "not Done"
+
+                    document.getElementsByTagName("form")[0].setAttribute("name", "")
+                    console.log(divLis)
+                }
+                
+
+
+            }).catch((error) => {
+                 console.log(error)
+            });
+        }
+    }
+
+    function deleteToDo(id){
+
+        fetch("http://localhost:3000/todos/" + id, {
+            method: "DELETE"
+        }).then(()=>{
+            const div = document.getElementById(id)
+            const containerDiv = document.getElementById("container")
+            
+            containerDiv.removeChild(div)
+
+        })
+        
+    }
+
+    function editToDo(id){
+        console.log(id)
+        const div = document.getElementById(id)
+
+        const title = div.childNodes[0].innerText
+        const description = div.childNodes[1].innerText
+
+
+        const titleForm = document.getElementById("title")
+        titleForm.value = title
+
+        const descriptionForm = document.getElementById("description")
+        descriptionForm.value = description
+
+        document.getElementsByTagName("form")[0].setAttribute("name", id)
+        
+
+        console.log(div)
+    }
+    function addList(data){
+        const div = document.getElementById("container")
+
+        let lis = document.createElement("div")
+        lis.id = data.id
+        ul1 = document.createElement("ul")
+        ul1.innerHTML = data.title
+        lis.appendChild(ul1)
+
+        ul1 = document.createElement("ul")
+        ul1.innerHTML = data.description
+        lis.appendChild(ul1)
+
+        ul1 = document.createElement("ul")
+        ul1.innerHTML = data.completed ? "Done" :"not Done"
+        lis.appendChild(ul1)
+
+        let button = document.createElement("button")
+        button.innerHTML = "Delete"
+        button.setAttribute("onclick", "deleteToDo(" + data.id +")")
+        lis.appendChild(button)
+
+        button = document.createElement("button")
+        button.innerHTML = "Edit"
+        button.setAttribute("onclick", "editToDo(" + data.id +")")
+        lis.appendChild(button)
+        div.appendChild(lis)
+    }
+
+    function getToDo(){
+        fetch('http://localhost:3000/todos', {
+                method : "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                }}).then(resp => {
+                    {
+                        return resp.json()
+                    }
+                }).then(body => {
+                    
+                    body.map(data => {
+                        return addList(data)
+                    })
+                })
+            }
+
+    getToDo()
+</script>
+<body>
+
+<form>
+    <label for="title">title : </label>
+    <input type="text" id="title" name="title"><br><br>
+
+    <label for="description">description : </label>
+    <input type="text" id="description" name="description"><br><br>
+
+    <button onclick="onSubmit(); return false" value="Submit">send To-Do </button>
+
+    
+
+</form>
+
+
+<div id="container">
+    
+</div>
+</body>
+</html>
